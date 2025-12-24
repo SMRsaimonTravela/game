@@ -3,6 +3,7 @@ const path = require('path');
 
 const DATA_DIR = path.join(__dirname, 'data');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
+const FUNNY_LINES_FILE = path.join(DATA_DIR, 'funnyLines.json');
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
@@ -17,6 +18,24 @@ class GameManager {
         this.picks = []; // Array of { picker: name, picked: name }
         this.maxPicks = 3;
         this.storedUsers = this.loadStoredUsers();
+        this.funnyLines = this.loadFunnyLines();
+        this.usedFunnyLines = []; // Track used lines to skip them
+    }
+
+    // Load funny lines
+    loadFunnyLines() {
+        if (fs.existsSync(FUNNY_LINES_FILE)) {
+            const data = fs.readFileSync(FUNNY_LINES_FILE, 'utf8');
+            return JSON.parse(data);
+        }
+        return [];
+    }
+
+    // Get random funny line (fresh random each time)
+    getRandomFunnyLine() {
+        if (this.funnyLines.length === 0) return '';
+        const randomIndex = Math.floor(Math.random() * this.funnyLines.length);
+        return this.funnyLines[randomIndex];
     }
 
     // Helper methods for user persistence
@@ -87,7 +106,10 @@ class GameManager {
 
         this.users.set(socket.id, { name, picks: storedUser.picks || [] });
 
-        socket.emit('joined', { name });
+        // Get a random funny line for this user
+        const funnyLine = this.getRandomFunnyLine();
+
+        socket.emit('joined', { name, funnyLine });
         socket.emit('gameState', this.gameState);
 
         // Send existing picks to the user
@@ -176,6 +198,7 @@ class GameManager {
         this.users.clear();
         this.picks = [];
         this.storedUsers = [];
+        this.usedFunnyLines = []; // Reset funny lines on game reset
         this.clearStoredUsers(); // Clear users.json file
         this.gameState = 'WAITING';
         this.io.emit('gameReset');

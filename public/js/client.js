@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const userNameDisplay = document.getElementById('user-name-display');
     const waitingText = document.getElementById('waiting-text');
     const greetingArea = document.getElementById('greeting-area');
+    const funnyLineBox = document.getElementById('funny-line-box');
     const pickingArea = document.getElementById('picking-area');
     const pickBtn = document.getElementById('pick-btn');
     const myPicksList = document.getElementById('my-picks');
@@ -32,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let myName = '';
     let allUsers = [];
+    let myFunnyLine = localStorage.getItem('userFunnyLine') || '';
 
     const isAdminPage = window.isAdmin === true;
 
@@ -92,6 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const name = usernameInput.value.trim();
             if (name) {
                 localStorage.setItem('userName', name);
+                // Clear old funny line so new one is assigned
+                localStorage.removeItem('userFunnyLine');
+                myFunnyLine = '';
                 socket.emit('joinGame', name);
             } else {
                 alert('Please enter a name');
@@ -132,10 +137,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('joined', (data) => {
         myName = data.name;
+
+        // Only set funny line if not already stored (first time join)
+        if (!myFunnyLine && data.funnyLine) {
+            myFunnyLine = data.funnyLine;
+            localStorage.setItem('userFunnyLine', myFunnyLine);
+        }
+
         if (loginScreen) loginScreen.style.display = 'none';
         if (gameScreen) {
             gameScreen.style.display = 'block';
             if (userNameDisplay) userNameDisplay.textContent = myName;
+
+            // Show funny line
+            if (funnyLineBox && myFunnyLine) {
+                funnyLineBox.textContent = myFunnyLine;
+            }
         }
     });
 
@@ -156,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (state === 'STARTED') {
             if (waitingText) waitingText.style.display = 'none';
+            if (funnyLineBox) funnyLineBox.style.display = 'none';
             if (greetingArea) greetingArea.querySelector('h2').textContent = `Let's go, ${myName}! 🎲`;
             if (pickingArea) pickingArea.style.display = 'block';
             if (resultsArea) resultsArea.style.display = 'none';
@@ -164,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => shuffleNamesList(), 500);
         } else if (state === 'FINISHED') {
             if (waitingText) waitingText.style.display = 'none';
+            if (funnyLineBox) funnyLineBox.style.display = 'none';
             if (greetingArea) greetingArea.style.display = 'none';
             if (pickingArea) pickingArea.style.display = 'none';
             if (resultsArea) resultsArea.style.display = 'block';
@@ -173,6 +192,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (waitingText) {
                 waitingText.style.display = 'block';
                 waitingText.textContent = 'Please wait for the admin to start the game...';
+            }
+            if (funnyLineBox && myFunnyLine) {
+                funnyLineBox.style.display = 'block';
+                funnyLineBox.textContent = myFunnyLine;
             }
             if (greetingArea) {
                 greetingArea.style.display = 'block';
@@ -216,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
         log('Game has been reset');
         alert('Game has been reset by admin.');
         localStorage.removeItem('userName');
+        localStorage.removeItem('userFunnyLine');
         location.reload();
     });
 });
