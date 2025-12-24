@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Game Panel of Travela</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/client.js?v=<%= Date.now() %>" defer></script>
+</head>
+
+<body>
+    <div class="container">
+        <div id="login-screen">
+            <div class="title-icon">🎮</div>
+            <h1>Game Panel of Travela</h1>
+            <p class="subtitle">Enter your name to join the fun!</p>
+            <input type="text" id="username" placeholder="Your name">
+            <button id="join-btn">Join Game</button>
+        </div>
+
+        <div id="game-screen" style="display:none;">
+            <div class="greeting" id="greeting-area">
+                <h2>Welcome, <span id="user-name-display"></span>! 🎉</h2>
+                <p id="waiting-text" class="waiting-msg">Please wait for the admin to start the game...</p>
+            </div>
+
+            <div id="picking-area" style="display:none;">
+                <div class="pick-actions">
+                    <button id="pick-btn" class="btn-primary">🎲 Pick</button>
+                    <button id="shuffle-btn" class="btn-small btn-secondary">🔀 Shuffle</button>
+                    <span class="pick-info">Picks: <span id="picks-count">0</span>/3</span>
+                </div>
+
+                <div class="tags-section">
+                    <div class="tag-group">
+                        <span class="tag-label">Names (<span id="names-count">0</span>):</span>
+                        <div id="available-names-list" class="tags-container"></div>
+                    </div>
+                    <div class="tag-group">
+                        <span class="tag-label">Your Picks:</span>
+                        <div id="my-picks" class="tags-container picks-tags"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="results-area" style="display:none;">
+                <h3>🏆 Results</h3>
+                <div id="results-list" class="results-container"></div>
+            </div>
+        </div>
+
+        <div id="debug-console" class="activity-log">
+            <span class="log-title">📋 Live Activity</span>
+            <div class="log-content"></div>
+        </div>
+    </div>
+</body>
+
+</html>

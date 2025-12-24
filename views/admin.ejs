@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Game Panel of Travela - Admin</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script>window.isAdmin = true;</script>
+    <script src="/js/client.js?v=<%= Date.now() %>" defer></script>
+</head>
+
+<body>
+    <div class="container admin-panel">
+        <div class="title-icon">🎮</div>
+        <h1>Game Panel of Travela</h1>
+        <p class="admin-badge">👑 Admin Control</p>
+        <div class="controls">
+            <button id="start-game-btn" class="btn-small">Start</button>
+            <button id="calc-results-btn" class="btn-small">Results</button>
+            <button id="reset-game-btn" class="btn-small btn-danger">Reset</button>
+        </div>
+
+        <div class="stats-row">
+            <span class="stat-tag">Status: <strong id="game-status">WAITING</strong></span>
+            <span class="stat-tag">Users: <strong id="user-count">0</strong></span>
+        </div>
+
+        <div class="tag-group">
+            <span class="tag-label">👥 Players:</span>
+            <div id="user-list" class="tags-container"></div>
+        </div>
+
+        <div id="admin-results" style="display:none;">
+            <h3>🏆 Results</h3>
+            <div id="admin-results-list" class="results-container"></div>
+        </div>
+
+        <div id="debug-console" class="activity-log">
+            <span class="log-title">📋 Live Activity</span>
+            <div class="log-content"></div>
+        </div>
+    </div>
+</body>
+
+</html>
